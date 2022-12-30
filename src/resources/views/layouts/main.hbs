@@ -1,0 +1,234 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Mesic</title>
+	<link rel="icon" type="image/x-icon" href="/img/Mesic.png">
+    <link rel="stylesheet" href="/css/app.css">
+	<link rel="stylesheet" href="/css/sign.css">
+		<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-Zenh87qX5JnK2Jl0vWa8Ck2rdkQ2Bzep5IDxbcnCeuOxjzrPF/et3URy9Bv1WTRi" crossorigin="anonymous"><!--css file-->
+		<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.2/dist/js/bootstrap.bundle.min.js" integrity="sha384-OERcA2EqjJCMA+/3y+gxIOqMEjwtxJY7qPCqsdltbNJuaOe923+mo//f6V8Qbsw3" crossorigin="anonymous"></script>
+		<script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.6/dist/umd/popper.min.js" integrity="sha384-oBqDVmMz9ATKxIep9tiCxS/Z9fNfEXiDAYTujMAeBAsjFuCZSmKbSSUnQlmh/jp3" crossorigin="anonymous"></script>
+		<script src="https://code.jquery.com/jquery-3.3.1.slim.min.js" integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo" crossorigin="anonymous"></script>
+		<script src="https://cdn.jsdelivr.net/npm/popper.js@1.14.6/dist/umd/popper.min.js" integrity="sha384-wHAiFfRlMFy6i5SRaxvfOCifBUQy1xHdJ/yoi7FRNXMRBu5WHdZYu1hA6ZOblgut" crossorigin="anonymous"></script><!--this line and others above is for bootstrap and popper-->
+		<script src="https://kit.fontawesome.com/cf0c20577d.js" crossorigin="anonymous"></script> <!--Font awsesome, for ease access to icons-->
+		<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+		<link rel='stylesheet' href='https://cdn-uicons.flaticon.com/uicons-solid-straight/css/uicons-solid-straight.css'> <!--Flaticon solid straight pack-->
+		<script src="https://cdnjs.cloudflare.com/ajax/libs/handlebars.js/4.7.7/handlebars.min.js" 
+		integrity="sha512-RNLkV3d+aLtfcpEyFG8jRbnWHxUqVZozacROI4J2F1sTaDqo1dPQYs01OMi1t1w9Y2FdbSCDSQ2ZVdAC8bzgAg==" 
+		crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+</head>
+<body style="background-color:var(--bg-color);color:var(--text-color)!important;transition: background-color 0.4s ease-in-out">
+    <div class="app">
+        {{>header}}
+
+        <div class="container-xxl px-0">
+            {{{body}}}
+        </div>
+
+        {{> footer}}
+    </div>
+    
+    <script>
+		function parseJwt (token) {
+		var base64Url = token.split('.')[1];
+		var base64 = base64Url.replace(/-/g, '+').replace(/_/g, '/');
+		var jsonPayload = decodeURIComponent(window.atob(base64).split('').map(function(c) {
+			return '%' + ('00' + c.charCodeAt(0).toString(16)).slice(-2);
+		}).join(''));
+
+		return JSON.parse(jsonPayload);
+		}
+		$(document).ready(function(){
+			if(localStorage.jwt)
+			{
+				let obj={
+				token:localStorage.jwt,
+			}
+			var settings = {
+			"url": "/login",
+			"method": "POST",
+			"timeout": 0,
+			"headers": {
+				"Content-Type": "application/json"
+			},
+			"data":JSON.stringify(obj),
+			};
+			$.ajax(settings).done(function (response) {
+				$('#LogResButton').addClass('hidenav');
+				$('#userdropdown').addClass('hidenav');
+				$('#admindropdown').addClass('hidenav');
+				$('#'+response.message).removeClass('hidenav');
+				if(response.message=='LogResButton')
+				{
+					localStorage.removeItem('jwt');
+				}
+			});
+			}
+			else
+			{
+				$('#LogResButton').removeClass('hidenav');
+			}
+			if(localStorage.theme)
+			{
+				document.documentElement.setAttribute('data-theme',localStorage.theme);	
+				if(localStorage.theme=='dark')
+				{
+					let temp=$('#theme-slider').width()-21;
+					$('.slider').animate({left:temp},400);
+				}
+			}
+			else
+			{
+				document.documentElement.setAttribute('data-theme', 'light');
+				localStorage.theme='light';
+			}
+		});
+		$('#searchButton').click(function()
+		{
+			let searchtext = $('#searchbox').val();
+			location.href = "/search/?q=" + searchtext +"&type=";
+		});
+		$('#searchbox').on('keyup',function(e)
+		{
+			if(e.key=='Enter'||e.keyCode==13)
+			{
+				let searchtext = $('#searchbox').val();
+				location.href = "/search/?q=" + searchtext +"&type=";
+			}
+		})
+		$('#navbarDropdown').on("show.bs.dropdown",function()
+		{
+			$('#dropdownavt').css("z-indent","5");
+			$('#dropdownavt').css("display","flex");
+			$('#navbarDropdown').animate({marginBottom:"+=200px"});
+			$('#dropdownavt').animate({height:"200px",opacity:"1"},400);
+
+		});
+		$("#navbarDropdown").on("hide.bs.dropdown",function()
+		{
+			$('#navbarDropdown').animate({marginBottom:"-=200px"});
+			$("#dropdownavt").animate({height:"0px",opacity:"0"},400,function()
+			{
+			});
+			$("#dropdownavt").css("z-indent","0");
+		});
+		$("#dropdown0").on("show.bs.dropdown",function()
+		{
+			$("#dropdownmenu0").css("z-indent","5");
+			$("#dropdownmenu0").css("display","flex");
+			$('#dropdown0').animate({marginBottom:"+=100px"});
+			$("#dropdownmenu0").animate({height:"100px",opacity:"1"},400);
+		});
+		$("#dropdown0").on("hide.bs.dropdown",function()
+		{
+			$('#dropdown0').animate({marginBottom:"-=100px"});
+			$("#dropdownmenu0").animate({height:"0px",opacity:"0"},400,function()
+			{
+			});
+			$("#dropdownmenu0").css("z-indent","0");
+		});
+		$("#dropdown1").on("show.bs.dropdown",function()
+		{
+			$("#dropdownmenu1").css("z-indent","5");
+			$("#dropdownmenu1").css("display","flex");
+			$("#dropdownmenu1").animate({height:"200px",opacity:"1"},400);
+		});
+		$("#dropdown1").on("hide.bs.dropdown",function()
+		{
+			$("#dropdownmenu1").animate({height:"0px",opacity:"0"},400,function()
+			{
+				$("#dropdownmenu1").css("display","none");
+			});
+			$("#dropdownmenu1").css("z-indent","0");
+		});
+		$("#dropdown3").on("show.bs.dropdown",function()
+		{
+			$("#dropdownmenu3").css("z-indent","5");
+			$("#dropdownmenu3").css("display","flex");
+			$("#dropdownmenu3").animate({height:"200px",opacity:"1"},400);
+		});
+		$("#dropdown3").on("hide.bs.dropdown",function()
+		{
+			$("#dropdownmenu3").animate({height:"0px",opacity:"0"},400,function()
+			{
+				$("#dropdownmenu3").css("display","none");
+			});
+			$("#dropdownmenu3").css("z-indent","0");
+		});
+		$('#LogResButton').click(function()
+		{
+			/*$('.overlay').css("display","flex");
+			$('.overlay').animate({opacity:"1"},400);
+			$('#signupoverlay').css("display","flex");
+			$('#signupoverlay').animate({marginTop:"+8%",opacity:"1"},400);*/
+		});
+		$('.signup').click(function(event)
+		{
+			
+			/*var settings = {
+				"url": "https://api.spotify.com/v1/search?q=smooth&type=track",
+				"method": "GET",
+				"timeout": 0,
+				"headers": {
+				  "Authorization": "Bearer (token)"
+				},
+			  };
+			  
+			  $.ajax(settings).done(function (response) {
+				console.log(response);
+			  });*/
+			event.stopPropagation();
+		});
+		$('.overlay').click(function() //click on greyed-out area besides the login/reg form
+		{
+			let overlayvar=$('.overlay');
+			$('.signup').animate({marginTop:"0",opacity:"0"},400,function()
+			{
+				$('.signup').css("display","none");
+				overlayvar.animate({opacity:"0"},200);
+				overlayvar.promise().done(function()
+				{
+					overlayvar.css("display","none");
+				});
+			});
+		});
+		function set_theme()
+		{
+			if(document.documentElement.getAttribute('data-theme') == 'light'){
+				document.documentElement.setAttribute('data-theme', 'dark');
+				localStorage.theme='dark';
+				let temp=$('#theme-slider').width()-21;
+				$('.slider').animate({left:temp},400);
+			}
+			else{
+				document.documentElement.setAttribute('data-theme', 'light');
+				localStorage.theme='light';
+				$('.slider').animate({left:"1px"},400);
+			}
+		}
+		$('#signup1').click(function() //user clicks on sign up button on the login form
+		{
+			$('#signupoverlay').animate({marginTop:"0",opacity:"0"},400,function()
+			{
+				$('#signupoverlay').css("display","none");
+				$('#regoverlay').css("display","flex");
+				$('#regoverlay').animate({marginTop:"+8%",opacity:"1"},400);
+			});
+		});
+		$('#login2').click(function() //user clicks on login button on the register form
+		{
+			$('#regoverlay').animate({marginTop:"0",opacity:"0"},400);
+			$('#regoverlay').promise().done(function()
+			{
+				$('#regoverlay').css("display","none");
+				$('#signupoverlay').css("display","flex");
+				$('#signupoverlay').animate({marginTop:"+8%",opacity:"1"},400);
+			});
+		});
+
+	</script>
+</body>
+</html>

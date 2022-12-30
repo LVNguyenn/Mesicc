@@ -1,0 +1,124 @@
+<div class="container-xxl d-flex my-2" style="justify-content:center;background:var(--nav-color);transition:background-color 0.4s ease-in-out; border-radius:10px">
+    {{!-- action = jump to function --}}
+    <form method="POST" action="/me/signup" style="background:transparent;border:none;box-shadow:none" class="form" id="form-1" onsubmit="checkvalid(event)">
+        <h3 class="heading">Đăng ký</h3>
+
+        <div class="spacer"></div>
+
+        <div class="form-group">
+            <label for="fullname" class="form-label">Tên đầy đủ</label>
+            <input id="fullname" name="fullname" type="text" placeholder="VD: Nguyên Lê" class="form-control">
+            <span class="form-message"></span>
+        </div>
+
+        <div class="form-group">
+            <label for="email" class="form-label">Email</label>
+            <input id="email" name="email" type="text" placeholder="VD: email@domain.com" class="form-control">
+            <span class="form-message"></span>
+        </div>
+
+        <div class="form-group">
+            <label for="password" class="form-label">Mật khẩu</label>
+            <input id="password" name="password" type="password" placeholder="Nhập mật khẩu" class="form-control">
+            <span class="form-message"></span>
+        </div>
+
+        <div class="form-group">
+            <label for="password_confirmation" class="form-label">Nhập lại mật khẩu</label>
+            <input id="password_confirmation" name="password_confirmation" placeholder="Nhập lại mật khẩu"
+                type="password" class="form-control">
+            <span class="form-message" id="form-message"></span>
+        </div>
+
+        <button id="submitbtn" style="background-color:var(--button-color);box-shadow:0px 0px 3px black" class="form-submit" >Đăng ký</button>
+        <button style="background-color:var(--button-color);box-shadow:0px 0px 3px black" class="form-submit" onclick="gotosignin(event)">Đăng nhập</button>
+    </form>
+
+</div>
+<script>
+    function gotosignin(event)
+    {
+        event.preventDefault();
+        location.href='/me/sign-in';
+    }
+    function checkvalid(evt)
+    {
+        if($('#password').val().length<6)
+        {
+            $('#form-message').html("Mật khẩu phải có độ dài tối thiểu là 6");
+            evt.preventDefault();
+        }
+        else
+        {
+            let obj={
+                fullname:$('#fullname').val(),
+                email:$('#email').val(),
+                password:$('#password').val(),
+                password_confirmation:$('#password_confirmation').val()
+            }
+            evt.preventDefault();
+            $.post('/me/signup',obj).done(function(res,textStatus,xhr)
+            {
+                if(xhr.status==200)
+                {
+                    localStorage.jwt= res.message;
+                    location.href='/';
+                }
+            }).catch(function(error){
+                 let temp=document.getElementsByClassName('form-control');
+                    for(let i of temp)
+                    {
+                        i.nextElementSibling.innerHTML="";
+                    }
+                if(error.status==400)
+                {
+                    let temp1=document.getElementsByClassName('form-control');
+                    for(let i of temp1)
+                    {
+                        if(i.value=="")
+                        {
+                            i.nextElementSibling.innerHTML="Vui lòng điền vào trường này";
+                        }
+                    }
+                }
+                else if (error.status==401)
+                {
+                    $('#form-message').html("Mật khẩu và xác nhận mật khẩu không khớp nhau")
+                }
+                else if (error.status==402)
+                {
+                    document.getElementsByClassName('form-message')[1].innerHTML="Email không đúng cú pháp";
+                }
+                else if (error.status==403)
+                {
+                    $('#form-message').html('Tài khoản đã tồn tại');
+                }
+            })
+        }
+        
+        /*let flag=true;
+        for(let i=0;i<4;i++)
+        {
+            if(document.getElementsByClassName('form-control')[i].value==null || document.getElementsByClassName('form-control')[i].value=="")
+            {
+                flag=false;
+                document.getElementsByClassName('form-message')[i].innerHTML="Please fill in this field";
+            }
+            else
+            {
+                document.getElementsByClassName('form-message')[i].innerHTML="";
+            }
+        }
+        if(!checkpw())
+        {
+            flag=false;
+            document.getElementsByClassName('form-message')[3].innerHTML="Passwords don't match";
+        }
+        if(flag==false)
+        {
+            evt.preventDefault();
+        }*/
+
+    }
+
+</script>

@@ -1,0 +1,171 @@
+<div class="container-xxl" style="font-size:30px;font-family:sans-serif;height:1000px;transition: all 0.4s ease-in-out">
+    
+    <div class="row d-flex" style="border-radius:15px;background-color:var(--nav-color);padding-bottom:50px;justify-content:flex-start; align-items:center">
+        <!-- User Avatar -->
+        <div class="col-4 mx-2 my-2 d-inline-flex p-0" style="height:200px;width:200px;border:5px solid var(--active-search-color);border-radius:50%; transition:border-color 0.4s ease-in-out;justify-content:center; align-items:center">
+            <img src="/img/change_avt.png" alt="change user avatar" id="change-avt">
+            <img src="" alt="User Avatar" id="user-avt">
+            <input type="file" accept="image/*" onchange="preview(event)" style="position: absolute;width:10%;height:10%;opacity:0" id="change-avt-button">
+        </div>
+        <!-- User Name -->
+        <div class="col-8 mx-2 my-2 d-inline-flex inputSwitch" style="color:var(--text-color); align-items:center">
+            <span id="username"></span><input id="usernameinp" value="John Doe">
+            <img src="/img/edit.png" style="margin:0px 15px;filter:invert(var(--filter-invert-val));height:25px;width:25px;cursor:pointer" id="edit-name">
+        </div>
+    </div>
+    <div class="row d-flex mt-2 p-0" style="background-color:var(--bg-color);color:var(--text-color);border-radius:15px">
+        <div class="dropdown p-0 d-flex">
+            <button class="col-12 topNavElement" style="border-radius:15px;margin:0px" id="dropdown3" data-bs-toggle="dropdown" data-bs-auto-close="outside" aria-expanded="false">
+                Liked songs
+            </button>
+            <ul class="dropdownmenu dropdown-menu" id="dropdownmenu3" style="width:100%;padding:0px;min-width: 5rem !important">
+                {{#each songlist}}
+                <li class="song-item-id" style="display:none">{{this._id}}</li>
+                <li><a class="dropdown-item song-item" href='/songs/{{this.slug}}'>{{this.name}}</a></li>
+                {{/each}}
+                <li><hr></li>
+                <li><a class="dropdown-item" id="playall">Nghe toàn bộ</a></li>
+            </ul>
+        </div>
+    </div>
+</div>
+
+<script>
+    $('document').ready(function()
+    {
+        if(!localStorage.jwt)
+        {
+            location.href='/';
+        }
+        else
+        {
+            let obj={
+                token:localStorage.jwt,
+            }
+            var settings = {
+			"url": "/me/authen",
+			"method": "POST",
+			"timeout": 0,
+			"headers": {
+				"Content-Type": "application/json"
+			},
+			"data":JSON.stringify(obj),
+			};
+			$.ajax(settings).done(function (response) {
+            $("#user-avt").attr("src",response.user.image);
+            $('#username').html(response.user.fullname);
+            $('#usernameinp').val(response.user.fullname);
+            console.log(document.getElementsByClassName('song-item-id')[0].innerHTML);
+            $('#playall').attr('href','/songs/playlist/'+response.user._id+'/'+document.getElementsByClassName('song-item-id')[0].innerHTML);
+			});
+        }
+    })
+	function update(userinfo)
+	{
+	var settings = {
+		"url": "/me/update",
+		"method": "POST",
+		"timeout": 0,
+		"headers": {
+			"Content-Type": "application/json"
+		},
+		"data":JSON.stringify(userinfo),
+		};
+		$.ajax(settings).done(function (response,textStatus,xhr) {
+		if(xhr.status!=200)
+		{
+			console.log("not authorized");
+			return;
+		}
+		else
+		{
+			localStorage.jwt=response.user;
+		}
+		})
+	}
+
+    async function preview(event)
+		{
+			var reader=new FileReader();
+			reader.onload = function(e){$('#user-avt').attr('src',e.target.result);};
+			reader.readAsDataURL(event.target.files[0]);
+			reader.onload=function(e)
+			{
+				var url=reader.result;
+				var base64url=url.replace(/^data:image\/(png|jpeg);base64,/, "");
+				var myHeaders = new Headers();
+				myHeaders.append("Authorization", "Client-ID 1c43a2007c79104");
+				
+				var formdata = new FormData();
+				formdata.append("image", `${base64url}`);
+				formdata.append("type", "base64");
+				
+				var requestOptions = {
+				  method: 'POST',
+				  headers: myHeaders,
+				  body: formdata,
+				  redirect: 'follow'
+				};
+				
+				fetch("https://api.imgur.com/3/upload", requestOptions)
+				  .then(result => result.json())
+				  .then(data=>{
+					console.log(data);
+					$('#user-avt').attr('src',data.data.link);
+				  })
+				  .catch(error => console.log('error', error));
+			}
+            $('#user-avt').attr('src',response.data.data.link);
+			let userinfo= parseJwt(localStorage.jwt);
+			userinfo.image=response.data.data.link;
+			update(userinfo);
+		};
+    if(localStorage.avt)
+	{
+		$('#user-avt').attr('src',localStorage.avt);
+	}
+	document.documentElement.setAttribute('data-theme', 'light');
+	if(document.documentElement.getAttribute('data-theme') == 'light')
+	{
+		
+	}
+	var $inputSwitches = $(".inputSwitch"),
+	$inputs = $inputSwitches.find("input"),
+	$spans = $inputSwitches.find("span");
+	$spans.on("click", function() {
+	var $this = $(this);
+	$this.hide().siblings("input").show().focus().select();
+	}).each( function() {
+		var $this = $(this);
+	$this.text($this.siblings("input").val());
+	});
+	$inputs.on("blur", function() {
+	var $this = $(this);
+	$this.hide().siblings("span").text($this.val()).show();
+	}).on('keydown', function(e) {
+	if (e.which == 9) {
+		e.preventDefault();
+		if (e.shiftKey) {
+		$(this).blur().parent().prevAll($inputSwitches).first().find($spans).click();
+		} else {
+		$(this).blur().parent().nextAll($inputSwitches).first().find($spans).click();
+		}
+	}
+	}).hide();
+	
+	$("#edit-name").on("click", function() {
+		var $this = $spans;
+		$this.hide().siblings("input").show().focus().select();
+		}).each( function() {
+			var $this = $(this);
+		$this.text($this.siblings("input").val());
+		});
+		$inputs.on("blur", function() {
+		var $this = $(this);
+		$this.hide().siblings("span").text($this.val()).show();
+				console.log($('#username').html());
+				let userinfo= parseJwt(localStorage.jwt);
+				userinfo.fullname=$('#username').html();
+				update(userinfo);
+		}).hide();
+</script>

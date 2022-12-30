@@ -1,0 +1,666 @@
+<div id="songpath" style="display:none">{{song.path}}</div>
+<div id="songgg" style="display:none">{{song}}</div>
+<div id="songslug" style="display:none">{{song.slug}}</div>
+<div id="songid" style="display:none">{{song._id}}</div>
+<div class="container-xl mb-4">
+	<div class="p-0" style="box-shadow:1px 1px 2px black, -1px -1px 2px black;margin-top: 10px;background-color:var(--nav-color);color:var(--text-color);border-radius:30px">
+		<div class="row d-flex" style="font-family:Cursive">
+			<h1 class="col-12 d-flex" style="justify-content: center;" id="track_name">{{song.name}}</h1>
+			<h3 class="col-12 d-flex" style="justify-content:center" id="track_artist">{{song.singer}}</h3>
+			<h4 class="col-12 d-flex" style="justify-content:center" id="track_type">{{song.type}}</h4>
+    	</div>
+
+		<div class="row d-flex p-0" >
+			<div class="p-0 mt-4" style="width:200px;height:200px;position:relative;left:calc(50% - 100px);border-radius:50%;box-shadow: 0 0 0 10px var(--active-search-color)">
+				<img class="disk" src="{{song.image}}" id="track_art">
+			</div>
+			<div class="temp p-0 mt-4" style="background-color:white"></div>
+		</div>
+		<div class="row d-flex p-0 mt-4" style="justify-content:center;font-family:monospace">
+			<div class="current-time col-1 d-flex mx-2" id="current_time" style="justify-content:flex-end">00:00</div>
+			<input type="range" value="0" class="d-flex seek-bar col-4 p-0" id="seek_slider" onchange="seekTo()">
+			<div class="total-time col-1 d-flex mx-2" id="total_duration" style="justify-content:flex-start">00:00</div>
+		</div>
+		<div class="row d-flex p-0 mt-4" style="justify-content:center">
+			<div class="d-flex col-2 p-0 mx-3 volume-control" style="align-items:center;justify-content:center">
+				<i class="fa-solid fa-volume-low"></i>
+				<input type="range" min="1" max="100" value="100" id="volume_slider" class="mx-2 col-12" onchange="setVolume()">
+				<i class="fa-solid fa-volume-high"></i>
+			</div>
+		</div>
+		<div class="row d-flex p-0 mt-4" style="justify-content:center">
+			<div class="col-1 d-flex mx-2">
+
+			</div>
+			<div class="shuffle col-1 d-flex mx-2" style="justify-content:center">
+				<div id="toggleshuffleloop" class="d-flex" style="align-items:center;cursor:pointer;height:30px;width:30px" onclick="toggleshuffleloop()">
+					<i class="fa-solid fa-repeat fa-2xl"></i>
+				</div>
+			</div>
+			<div class="previous col-1 d-flex mx-2" style="justify-content:center" >
+				<div id="prev-track" class="d-flex" style="align-items:center;cursor:pointer;height:30px;width:30px" onclick="previous()">
+					<i class="fa-solid fa-backward-step fa-2xl"></i>
+				</div>				
+			</div>
+			<div class="play col-1 d-flex mx-2" style="justify-content:center">
+				<div id="playpause-track" class="d-flex" style="align-items:center;cursor:pointer;height:30px;width:30px" onclick="playpause()">
+					<i class="fa-solid fa-play fa-2xl"></i>
+				</div>
+			</div>
+			<div class="next col-1 d-flex mx-2" style="justify-content:center" >
+				<div id="next-track" class="d-flex" style="align-items:center;cursor:pointer;height:30px;width:30px" onclick="next()">
+					<i class="fa-solid fa-forward-step fa-2xl"></i>
+				</div>
+			</div>
+			<div class="like col-1 d-flex mx-2" style="justify-content:center" >
+				<div id="like" class="d-flex" style="align-items:center;cursor:pointer;height:30px;width:30px" onclick="likesong()">
+					<i class="fa-regular fa-heart fa-2xl"></i>
+				</div>
+			</div>
+			<div class="download col-1 d-flex mx-2 p-0" style="justify-content:center;align-items:center">
+				<a href={{song.path}} target="_blank" onclick="downloadmusic(event)" id="downloadmusic" download class="d-flex" style="cursor:pointer;color:inherit;justify-content:center;width:50px;height:32px;align-items:center">
+					<i class="fa-solid fa-download fa-2xl"></i>
+				</a>
+			</div>
+		</div>
+		<div class="p-0 mt-4 mb-4 d-flex wave" style="height:100px;justify-content:center;align-items:center;margin: 0px 20%">
+			<span class="stroke"></span>
+			<span class="stroke"></span>
+			<span class="stroke"></span>
+			<span class="stroke"></span>
+			<span class="stroke"></span>
+			<span class="stroke"></span>
+			<span class="stroke"></span>
+		</div>
+	</div>
+	<div class="p-0" style="box-shadow:1px 1px 2px black, -1px -1px 2px black;margin-top: 10px;background-color:var(--nav-color);color:var(--text-color);border-radius:30px">
+		<div class="d-flex mt-2" style="position:relative;justify-content:center">
+			<h3 style="font-family:cursive">Random Songs</h3>
+		</div>
+		<div class="mx-2">
+			<div class="row d-flex" id="paginated-list" style=" justify-content:center;transition:background-color 0.4s ease-in-out">
+				{{#each randlist}}
+					<div class="col-6 col-lg-2">
+						<div class="card card-song-item song-item">
+							<a href="/songs/{{this.slug}}">
+								<img class="card-img-top" src="{{this.image}}" alt="{{this.name}}">
+							</a>
+							<div class="card-body d-flex song-body">
+								<a href="/songs/{{this.slug}}" class="col-12">
+									<h5 class="card-title">{{this.name}}</h5>
+								</a>
+								<div class="d-flex" style="flex-wrap:wrap;align-items:flex-end;justify-content:center">
+								<p class="card-text col-12 d-flex" style="justify-content:center;align-items:flex-end">{{this.singer}}</p>
+								<a href="/songs/{{this.slug}}" class="listen-btn btn btn-primary col-12">Nghe nhạc</a>
+								</div>
+							</div>
+						</div>
+					</div>
+				{{/each}}
+			</div>
+		</div>
+		<div class="d-flex" style="justify-content:center">
+			<nav class="pagination-container">
+				<button class="pagination-button" id="prev-button" aria-label="Previous page" title="Previous page">&lt;
+				</button>
+				
+				<div id="pagination-numbers">  
+				</div>
+				
+				<button class="pagination-button" id="next-button" aria-label="Next page" title="Next page">&gt;
+				</button>
+			</nav>
+		</div>
+	</div>
+
+	<div class="p-0" style="font-family:cursive;box-shadow:1px 1px 2px black, -1px -1px 2px black;margin-top: 10px;background-color:var(--nav-color);color:var(--text-color);border-radius:30px">
+		<div class="d-flex mt-2" style="position:relative;justify-content:center">
+			<h3>Comments</h3>
+		</div>
+		<div class="d-flex" style="justiy-content:center">
+			<form method="POST" action="/me/comment" style="background:transparent;border:none;box-shadow:none" class="form2" id="form-1" onsubmit="checkcomment(event)">
+				<input id="comment" name="comment" type="text" placeholder="Enter comment" class="form-control">
+			</form>
+		</div>
+		<div class="pb-2" id="commentsection" style="max-height:1000px;overflow-x:auto;overflow-y:auto">
+		{{#each song.comments}}
+			<div class="d-flex mx-3 my-2 px-2 comment" style="justify-content:flex-end;flex-wrap:wrap;height:120px;max-height:120px;overflow:auto;word-wrap: break-word;border:2px solid var(--text-color);border-radius:15px;background:var(--bg-color);align-items:flex-start">
+				<div class="col-6 cmt-name d-flex" style="font-weight:bolder;font-size:larger">{{this.name}}</div>
+			
+				<div class="col-6 mt-1 d-flex date-show" style="align-items:center;justify-content:flex-end;font-weight:lighter;font-size:small">{{this.cmtdate}}</div>
+
+				<div class="mt-1 col-12" style="font-weight:normal">{{this.comment}}</div>
+				
+				<div class="col-12 cmt-date mt-3" style="display:none;font-weight:lighter;font-size:x-small">{{this.cmtdate}}</div>
+				<div id="erasecmt" class="hidenav" style="cursor:pointer" onclick="erasecomment(this)">
+					<i class="fa-solid fa-trash-can"></i>
+				</div>
+			</div>
+		{{/each}}
+		</div>
+	</div>
+</div>
+
+<script>
+	function checkcomment(event)
+	{	
+		document.getElementById('comment').disabled=true;
+
+		event.preventDefault();
+		if(localStorage.jwt)
+		{
+			let obj={
+			token:localStorage.jwt,
+			songid:$('#songid').html(),
+			comment:$('#comment').val()
+			}
+			var settings = {
+			"url": "/me/comment",
+			"method": "POST",
+			"timeout": 0,
+			"headers": {
+				"Content-Type": "application/json"
+			},
+			"data":JSON.stringify(obj),
+			};
+			$.ajax(settings).done(function (response,textStatus,xhr) {
+			$('#comment').val("");
+			document.getElementById('comment').disabled=false;
+			
+			if(xhr.status!=200)
+			{
+				console.log("not user");
+				return;
+			}
+			else
+			{
+				location.reload();
+			}
+			});
+		}
+		else
+		{
+			console.log("cancel comment");
+			return;
+		}
+	}
+
+	function erasecomment(ele)
+	{
+		if(!localStorage.jwt)
+		{
+			console.log("no user");
+			return;
+		}
+		let userinfo=parseJwt(localStorage.jwt);
+		let parent=ele.parentElement;
+		let obj={
+			token:localStorage.jwt,
+			time:parent.querySelector('.cmt-date').innerHTML,
+			name:parent.querySelector('.cmt-name').innerHTML,
+			songid:$('#songid').html()
+		}
+		var settings = {
+		"url": "/me/del/comment",
+		"method": "POST",
+		"timeout": 0,
+		"headers": {
+			"Content-Type": "application/json"
+		},
+		"data":JSON.stringify(obj),
+		};
+
+		$.ajax(settings).done(function (response,textStatus,xhr) {
+
+		if(xhr.status!=200)
+		{
+			console.log("not user");
+			return;
+		}
+		else
+		{
+			location.reload();
+		}
+		});
+	}
+
+	function downloadmusic(event)
+	{
+		if(!localStorage.jwt)
+		{
+			console.log("not logged in");
+			event.preventDefault();
+			return;
+		}
+		else
+		{
+			let obj={
+			token:localStorage.jwt,
+			}
+			var settings = {
+			"url": "/me/authen",
+			"method": "POST",
+			"timeout": 0,
+			"headers": {
+				"Content-Type": "application/json"
+			},
+			"data":JSON.stringify(obj),
+			};
+			$.ajax(settings).done(function (response,textStatus,xhr) {
+			if(xhr.status!=200)
+			{
+				console.log("not user");
+				event.preventDefault();
+				return;
+			}
+			});
+		}
+	}
+	let track_art=document.getElementById("track_art");
+	$("#track_art").css('animation-play-state','paused');
+	let track_name=document.getElementById("track_name");
+	let track_artist=document.getElementById("track_artist");
+
+	let playpause_btn=document.getElementById("playpause-track");
+	let next_btn=document.getElementById("next-track");
+	let prev_btn=document.getElementById("prev-track");
+
+	let seek_slider=document.getElementById("seek_slider");
+	let volume_slider=document.getElementById("volume_slider");
+	let curr_time=document.getElementById("current_time");
+	let total_duration=document.getElementById("total_duration");
+	let wave= document.querySelector('.wave');
+	let like_btn=document.getElementById("like");
+	
+	let track_index=0;
+	let isPlaying=false;
+	let isLiked=false;
+	let isRandom=0; //0 is loop whole collection, 1 is random, 2 is repeat 1 song
+	let updateTimer;
+
+	if(sessionStorage.playstate)
+	{
+		isRandom=Number(sessionStorage.playstate);
+		if(isRandom==1)
+		{
+			playRandom();
+		}
+		else if (isRandom==2)
+		{
+			playrepeat();
+		}
+	}
+	let previous_music={};
+	let track_queue =[];
+	if(sessionStorage.trackqueue)
+	{
+		track_queue=JSON.parse(sessionStorage.trackqueue);
+	}
+
+	let curr_track=document.createElement('audio');
+	
+	if(localStorage.volume)
+	{
+		curr_track.volume=localStorage.volume;
+		volume_slider.value=localStorage.volume*100;
+	}
+
+	$('.stroke').each(function(){
+		$(this).css('animation-play-state','paused');
+	})
+	//get song from database
+	let music={
+		img:$('#track_art').attr("src"),
+		name:$('#track_name').html(),
+		artist:$('#track_artist').html(),
+		src:$('#songpath').html(),
+		path:$('#songslug').html()
+	};
+	let musiccollection = document.getElementsByClassName("song-item");
+	let next_music = {
+		img:musiccollection[0].getElementsByClassName("card-img-top")[0].src,
+		name:musiccollection[0].getElementsByClassName("card-title")[0].innerHTML,
+		artists:musiccollection[0].getElementsByClassName("card-text")[0].innerHTML,
+		path: musiccollection[0].getElementsByClassName('listen-btn')[0].href,
+	};
+	let randnumber= Math.floor(Math.random() * 5);
+	if(randnumber==5)
+	{
+		randnumber=4;
+	}
+	let random_music = {
+		img:musiccollection[randnumber].getElementsByClassName("card-img-top")[0].src,
+		name:musiccollection[randnumber].getElementsByClassName("card-title")[0].innerHTML,
+		artists:musiccollection[randnumber].getElementsByClassName("card-text")[0].innerHTML,
+		path: musiccollection[randnumber].getElementsByClassName('listen-btn')[0].href
+		
+	};
+
+	function loadtrack(track_index)
+	{
+		clearInterval(updateTimer);
+		reset();
+		if (track_index==0)
+		{
+			curr_track.src=music.src;
+			track_art.src=music.img;
+			track_name.textContent=music.name;
+			track_artist.textContent=music.artist;
+		}
+		else if (track_index==3)
+		{
+
+		}
+		curr_track.load();
+		updateTimer=setInterval(setUpdate,1000);
+		curr_track.addEventListener("ended",next);
+		random_bg_color();
+	}
+	function random_bg_color(){
+		let hex = ['0', '1', '2', '3', '4', '5', '6', '7', '8', '9', 'a', 'b', 'c', 'd', 'e'];
+		let a;
+	
+		function populate(a){
+			for(let i=0; i<6; i++){
+				let x = Math.round(Math.random() * 14);
+				let y = hex[x];
+				a += y;
+			}
+			return a;
+		}
+		let Color1 = populate('#');
+		let Color2 = populate('#');
+		var angle = 'to right';
+	
+		let gradient = 'linear-gradient(' + angle + ',' + Color1 + ', ' + Color2 + ")";
+		document.body.style.background = gradient;
+	}
+	function reset()
+	{
+		curr_time.textContent="00:00";
+		total_duration.textContent="00:00";
+		seek_slider.value=0;
+	}
+	function toggleshuffleloop()
+	{
+		if(isRandom<2)
+		{
+			isRandom+=1;
+		}
+		else
+		{
+			isRandom=0;
+		}
+		sessionStorage.playstate=isRandom;
+		if (isRandom==0)
+		{
+			playloop();
+		}
+		else if (isRandom==1)
+		{
+			playRandom();
+		}
+		else
+		{
+			playrepeat();
+		}
+	}
+	function playloop()
+	{
+		$('#toggleshuffleloop').html('<i class="fa-solid fa-repeat fa-2xl"></i>')
+	}
+	function playRandom()
+	{
+		$('#toggleshuffleloop').html('<i class="fa-solid fa-shuffle fa-2xl"></i>')
+	}
+	function playrepeat()
+	{
+		$('#toggleshuffleloop').html('<i class="fa-solid fa-arrows-rotate fa-2xl"></i>')
+	}
+	isLiked=false;
+	$(document).ready(function(){
+		if(localStorage.jwt)
+		{
+			let temp=parseJwt(localStorage.jwt);
+			console.log(temp);
+			let userfavlist=temp.favorite_songs;
+			if (userfavlist.includes($('#songid').html()))
+			{
+				console.log("is already liked");
+				isLiked=true;
+				$('#like').html('<i class="fa-solid fa-heart fa-2xl"></i>');
+			}
+			document.querySelectorAll('.comment').forEach(item=>{
+				if(item.querySelector(".cmt-name").innerHTML==temp.fullname)
+				{
+					item.querySelector('#erasecmt').classList.remove('hidenav');
+				}
+			})
+		}
+	})
+	function updatefavorite(userinfo)
+	{
+		var settings = {
+		"url": "/me/update",
+		"method": "POST",
+		"timeout": 0,
+		"headers": {
+			"Content-Type": "application/json"
+		},
+		"data":JSON.stringify(userinfo),
+		};
+		$.ajax(settings).done(function (response,textStatus,xhr) {
+		if(xhr.status!=200)
+		{
+			console.log("not authorized");
+			return;
+		}
+		else
+		{
+			console.log(response.message);
+			console.log(parseJwt(response.user));
+			localStorage.jwt=response.user;
+		}
+		});
+	}
+	function likesong()
+	{
+		if(!localStorage.jwt)
+		{
+			console.log("not logged in");
+			return;
+		}
+		else
+		{
+			let obj={
+			token:localStorage.jwt,
+			}
+			var settings = {
+			"url": "/me/authen",
+			"method": "POST",
+			"timeout": 0,
+			"headers": {
+				"Content-Type": "application/json"
+			},
+			"data":JSON.stringify(obj),
+			};
+			$.ajax(settings).done(function (response,textStatus,xhr) {
+			if(xhr.status!=200)
+			{
+				console.log("not user");
+				return;
+			}
+			else
+			{
+				isLiked ? unlike():like();
+			}
+			});
+		}
+	}
+	function like()
+	{
+		console.log("like");
+		isLiked=true;
+		$('#like').html('<i class="fa-solid fa-heart fa-2xl"></i>');
+		userinfo=parseJwt(localStorage.jwt);
+		let templist=[];
+		templist=userinfo.favorite_songs;
+		templist.push($('#songid').html());
+		userinfo.favorite_songs=[...new Set(templist)];
+		updatefavorite(userinfo);
+	}
+	function unlike()
+	{
+		console.log("unlike");
+		isLiked=false;
+		$('#like').html('<i class="fa-regular fa-heart fa-2xl"></i>');
+		userinfo=parseJwt(localStorage.jwt);
+		let templist=[];
+		templist=userinfo.favorite_songs;
+		if(templist.includes($('#songid').html()))
+		{
+			console.log("is favorited, will remove now");
+			templist.splice(templist.indexOf($('#songid').html()),1);
+		}
+		userinfo.favorite_songs=[...new Set(templist)];
+		updatefavorite(userinfo);
+		
+	}
+	isPlaying = false;
+	function playpause()
+	{
+		isPlaying? pause():playTrack();
+	}
+	function playTrack()
+	{
+		isPlaying=true;
+		curr_track.play();
+		playpause_btn.innerHTML='<i class="fa-solid fa-pause fa-2xl"></i>';
+		$('.stroke').each(function(){
+			$(this).css('animation-play-state','running');
+		})
+		$("#track_art").css("animation-play-state","running");
+	}
+	function pause()
+	{
+		console.log("pause");
+		isPlaying=false;
+		curr_track.pause();
+		playpause_btn.innerHTML='<i class="fa-solid fa-play fa-2xl"></i>';
+		$('.stroke').each(function(){
+			$(this).css('animation-play-state','paused');
+		})
+		$("#track_art").css("animation-play-state","paused");
+	}
+	//
+	//
+	//
+	//
+	//
+	loadtrack(0);
+	var promise=curr_track.play();
+	if(promise!==undefined)
+	{
+		promise.then(_=>{
+			isPlaying=true;
+			playpause_btn.innerHTML='<i class="fa-solid fa-pause fa-2xl"></i>';
+			$('.stroke').each(function(){
+				$(this).css('animation-play-state','running');
+			})
+			$("#track_art").css("animation-play-state","running");
+		}).catch(error=>{
+			console.log("autoplay not allowed")
+			curr_track.pause();
+		});
+	}
+	//
+	//
+	//
+	//
+	//
+	function next()
+	{
+		if (isRandom!=2)
+		{
+			track_index=isRandom+1;
+			if(track_queue.length>30)
+			{
+				track_queue.shift();
+			}
+			track_queue.push(music);
+			sessionStorage.trackqueue=JSON.stringify(track_queue);
+			if(track_index ==1)
+			{
+				window.location.href=next_music.path;
+			}
+			else
+			{
+				window.location.href=random_music.path;
+			}
+		}
+		else if(isRandom==2)
+		{
+			loadtrack(0);
+			playTrack();
+		}
+		
+	}
+	function previous()
+	{
+		/*if(track_index>0)
+		{
+			track_index-=1;
+		}
+		else
+		{
+			track_index=music_list.length-1;
+		}
+		loadtrack(track_index);
+		playTrack();*/
+		if(track_queue.length>0)
+		{
+			previous_music=track_queue.pop();
+			window.location.href=previous_music.path;
+		}
+		else
+		{
+			loadtrack(0);
+			playTrack();
+		}
+	}
+	function seekTo()
+	{
+		let seekto=curr_track.duration*(seek_slider.value/100);
+		curr_track.currentTime=seekto;
+	}
+	function setVolume()
+	{
+		curr_track.volume=volume_slider.value/100;
+		localStorage.volume=curr_track.volume;
+	}
+	
+	function setUpdate()
+	{
+		let seekPosition=0;
+		if(!isNaN(curr_track.duration))
+		{
+			seekPosition = curr_track.currentTime * (100 / curr_track.duration);
+			seek_slider.value = seekPosition;
+	
+			let currentMinutes = Math.floor(curr_track.currentTime / 60);
+			let currentSeconds = Math.floor(curr_track.currentTime - currentMinutes * 60);
+			let durationMinutes = Math.floor(curr_track.duration / 60);
+			let durationSeconds = Math.floor(curr_track.duration - durationMinutes * 60);
+	
+			if(currentSeconds < 10) {currentSeconds = "0" + currentSeconds; }
+			if(durationSeconds < 10) { durationSeconds = "0" + durationSeconds; }
+			if(currentMinutes < 10) {currentMinutes = "0" + currentMinutes; }
+			if(durationMinutes < 10) { durationMinutes = "0" + durationMinutes; }
+	
+			curr_time.textContent = currentMinutes + ":" + currentSeconds;
+			total_duration.textContent = durationMinutes + ":" + durationSeconds;
+		}
+	}
+</script>
+
+

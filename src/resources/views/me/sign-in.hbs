@@ -1,0 +1,56 @@
+<div class="container-xxl d-flex my-2" style="border-radius:10px;justify-content:center;background:var(--nav-color); transition: background-color 0.4s ease-in-out">
+    {{!-- action = jump to function --}}
+        <form action="/me/signin" method="POST" onsubmit="checkvalid(event)" class="form" id="form-2" style="background:transparent;border:none;box-shadow:none">
+            <h3 class="heading">Đăng nhập</h3>
+
+            <div class="spacer"></div>
+
+
+            <div class="form-group">
+                <label for="email" class="form-label">Email</label>
+                <input id="email" name="email" type="text" placeholder="VD: email@domain.com" class="form-control">
+                <span class="form-message"></span>
+            </div>
+
+            <div class="form-group">
+                <label for="password" class="form-label">Mật khẩu</label>
+                <input id="password" name="password" type="password" placeholder="Nhập mật khẩu" class="form-control">
+                <span class="form-message" id="form-message"></span>
+            </div>
+            <button class="form-submit" style="box-shadow:0px 0px 3px black" >Đăng nhập</button>
+            <button class="signupbtn" style="box-shadow:0px 0px 3px black" onclick="gotosignup(event)">Đăng ký</button>
+        </form>
+</div>
+<script>
+    function gotosignup(event)
+    {
+        event.preventDefault();
+        location.href='/me/sign-up';
+    }
+    function checkvalid(event)
+    {
+        let obj={
+            email:$('#email').val(),
+            password:$('#password').val(),
+        }
+        event.preventDefault();
+        $.post('/me/signin',obj).done(function(res,textStatus,xhr)
+        {
+            console.log(xhr.status);
+            if(xhr.status==200)
+            {
+                localStorage.jwt= res.message;
+                location.href='/';
+            }
+        }).catch(function(error){
+            if(error.status==401)
+            {
+                $('#form-message').html("Sai mật khẩu");
+            }
+            else if (error.status==403)
+            {
+                $('#form-message').html("Tài khoản không tồn tại");
+            }
+        })
+    }
+</script>

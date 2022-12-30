@@ -1,0 +1,37 @@
+{
+  "name": "mesic",
+  "version": "1.0.0",
+  "description": "Web nghe nhac",
+  "main": "index.js",
+  "scripts": {
+    "start": "nodemon --inspect index.js",
+    "watch": "node-sass --watch ./src/resources/scss/ --output ./src/public/css/",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/LVNguyenn/Mesicc.git"
+  },
+  "author": "lvnguyen",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/LVNguyenn/Mesicc/issues"
+  },
+  "homepage": "https://github.com/LVNguyenn/Mesicc#readme",
+  "dependencies": {
+    "bcrypt": "^5.1.0",
+    "crypto": "^1.0.1",
+    "express": "^4.18.2",
+    "express-handlebars": "^6.0.6",
+    "jsonwebtoken": "^9.0.0",
+    "method-override": "^3.0.0",
+    "mongoose": "^6.8.2",
+    "mongoose-delete": "^0.5.4",
+    "mongoose-slug-generator": "^1.0.4"
+  },
+  "devDependencies": {
+    "morgan": "^1.10.0",
+    "node-sass": "^8.0.0",
+    "nodemon": "^2.0.20"
+  }
+}

@@ -1,0 +1,138 @@
+<form class="mt-4" name="container-form" method="POST" action="/songs/handle-form-actions">
+  <div>
+    <h3>Kho nhạc</h3>
+    {{!-- {{#if deletedCount}} --}}
+    <a href="/me/trash/songs">Thùng rác 
+				<i class="fa-solid fa-trash-can"></i>({{deletedCount}})
+     </a>
+    {{!-- {{/if}} --}}
+    <div class="mt-4 d-flex align-items-center">
+      <div class="form-check">
+        <input class="form-check-input" type="checkbox" value="" id="checkbox-all">
+        <label class="form-check-label" for="checkbox-all">
+          Chọn tất cả
+        </label>
+      </div>
+
+      <select class="form-control form-control-sm checkbox-select-all-options" name="action" required="required">
+        <option value="">-- Hành động --</option>
+        <option value="delete">Xóa</option>
+      </select>
+      <button class="btn btn-primary btn-sm check-all-submit-btn" style="font-weight:bold;border-radius:15px;font-family:'Lucida Sans', 'Lucida Sans Regular', 'Lucida Grande', 'Lucida Sans Unicode', Geneva, Verdana, sans-serif" disabled="disabled">Thực hiện</button>
+    </div>
+  </div>
+
+    <table class="table mt-4" style="color:var(--text-color)">
+        <thead>
+            <tr>
+                <th scope="col" colspan="2">#</th>
+                <th scope="col">Tên bài nhạc</th>
+                <th scope="col">Ca sĩ</th>
+                <th scope="col" colspan="2">Thời gian tạo</th>
+            </tr>
+        </thead>
+        <tbody>
+            {{#each songs}}
+            <tr>
+                <td>
+                  <div class="form-check">
+                    <input class="form-check-input" type="checkbox" name="songIds[]" value="{{this._id}}">
+                  </div>
+                </td>
+                <th scope="row">{{sum @index 1}}</th>
+                <td>{{this.name}}</td>
+                <td>{{this.singer}}</td>
+                <td>{{this.createdAt}}</td>
+                <td>
+                    <a href="/songs/{{this._id}}/edit" class="btn btn-link">
+                      <i class="fa-sharp fa-solid fa-pen"></i>
+                    </a>
+                    <a href="" class="btn btn-link" data-bs-toggle="modal" style="btn::hover{color: white}" data-id="{{this._id}}" data-bs-target="#delete-song-modal">
+            					<i class="fa-solid fa-trash-can"></i>
+                    </a>
+                </td>
+            </tr>
+            {{else}}
+            <tr>
+              <td colspan="5" class="text-center">
+                Bạn chưa đăng bài nhạc nào.
+                <a href="/songs/create">Đăng nhạc</a>
+              </td>
+            </tr>
+            {{/each}}
+        </tbody>
+    </table>
+</form>
+
+{{!-- Xác nhận xóa nhạc --}}
+
+<div id="delete-song-modal" class="modal" tabindex="-1" role="dialog">
+  <div class="modal-dialog" role="document">
+    <div class="modal-content" style="background-color:var(--nav-color)">
+      <div class="modal-header">
+        <h5 class="modal-title">Xóa bài nhạc?</h5>
+        <button type="button" style="font-weight:600;width:30px;height:30px;border-radius:10px;border:1px solid black;background-color:var(--button-color)" class="close" data-bs-dismiss="modal" aria-label="Close">
+          X
+        </button>
+      </div>
+      <div class="modal-body">
+        <p>Bạn chắc chắn muốn xóa bài nhạc này?</p>
+      </div>
+      <div class="modal-footer">
+        <button id="btn-delete-song" type="button" class="btn btn-danger">Xóa bỏ</button>
+        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Hủy</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+{{!-- Delete hidden form --}}
+<form name="delete-song-form" method="POST"></form>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        var songId
+        var deleteForm = document.forms['delete-song-form']
+        var containerForm = $('form[name="container-form"]')
+        var btnDeleteSong = document.getElementById('btn-delete-song')
+        var checkboxAll = $('#checkbox-all')
+        var songItemCheckbox = $('input[name="songIds[]"]')
+        var checkAllSubmitBtn = $('.check-all-submit-btn')
+
+        // When dialog confirm clicked
+         $('#delete-song-modal').on('show.bs.modal', function (event) {
+            var button = $(event.relatedTarget)
+            songId = button.data('id')
+        })
+
+        // When delete song btn clicked
+        btnDeleteSong.onclick = function () {
+            deleteForm.action = '/songs/' + songId + '?_method=DELETE'
+            deleteForm.submit()
+        }
+
+        // Checkbox all changed
+        checkboxAll.change(function () {
+          var isCheckedAll = $(this).prop('checked')
+          songItemCheckbox.prop('checked', isCheckedAll)
+          renderCheckAllSubmitBtn()
+        })
+
+        // Song item checkbox changed
+        songItemCheckbox.change(function () {
+          var isCheckedAll = songItemCheckbox.length === $('input[name="songIds[]"]:checked').length
+          checkboxAll.prop('checked', isCheckedAll)
+          renderCheckAllSubmitBtn()
+        })
+
+        //Re-render check all submit button
+        function renderCheckAllSubmitBtn() {
+          var checkedCount = $('input[name="songIds[]"]:checked').length
+          if(checkedCount > 0) {
+            checkAllSubmitBtn.attr('disabled', false)
+          } else {
+            checkAllSubmitBtn.attr('disabled', true)
+          }
+        }
+    })
+</script>

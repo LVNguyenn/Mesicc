@@ -1,0 +1,139 @@
+<div class="container-fluid sticky-top" style="max-height:100px;box-shadow: 0px 1px 2px dimgray; background-color:var(--nav-color); transition: background-color 0.4s ease-in-out">
+	<div class="container-xxl topNav sticky-top" id="topNav">
+		<div class="row d-flex" style="padding:0px 8px;justify-content:space-evenly">
+			
+			<div class="col-sm-1 d-inline-flex" style="justify-items:center;justify-content:center">
+				<img src="/img/Mesic.png" alt="Mesic logo" style="width:50px; height:50px;filter:invert(var(--filter-invert-val2)) contrast(3);cursor:pointer" onclick="location.href='/'">
+			</div>
+			
+			<div class="col-sm-4 d-inline-flex" style="height:50px">
+				<input class="searchbox col px-1" type="text" id="searchbox" placeholder="Enter song's name">
+				<div class="col-2 d-inline-flex" style="align-items: center">
+					<button class="topNavElement d-inline-flex topNavSearch mx-1" id="searchButton">
+						<!-- search icon -->
+						<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" height="20px" width="20px" style="fill:var(--text-color)" class="transformsvg">
+							<!--! Font Awesome Pro 6.2.1 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license (Commercial License) Copyright 2022 Fonticons, Inc. -->
+							<path d="M416 208c0 45.9-14.9 88.3-40 122.7L502.6 457.4c12.5 12.5 12.5 32.8 0 45.3s-32.8 12.5-45.3 0L330.7 376c-34.4 25.2-76.8 40-122.7 40C93.1 416 0 322.9 0 208S93.1 0
+								208 0S416 93.1 416 208zM208 352c79.5 0 144-64.5 144-144s-64.5-144-144-144S64 128.5 64 208s64.5 144 144 144z"/></svg>
+					</button>
+				</div>
+			</div>
+				<button class="col-sm-2 topNavElement logres hidenav" style="border-radius:20px" id="LogResButton" onclick="gotoSignIn(event)">
+					Sign In
+				</button>
+			<div class="col-sm-2 p-0 hidenav" style="height:50px;justify-content:center" id="admindropdown">
+				<div class="dropdown d-inline-flex" style="width:100%">
+					<button style="width:100%" class=" userNav" id="navbarDropdown" data-bs-toggle="dropdown" data-bs-auto-close="outside" aria-expanded="false">
+						<img src="https://img.lovepik.com/free-png/20210922/lovepik-hand-painted-cartoon-male-head-png-image_401073216_wh1200.png" alt="" class="user-avatar">
+						<span>Nguyên Lê</span>
+					</button>
+					<ul class="dropdownmenu dropdown-menu" id="dropdownavt" style="padding:0px;min-width: 5rem !important">
+						<li><a class="dropdown-item" href="/songs/create">Thêm bài nhạc</a></li>
+						<div class="dropdown-divider"></div>
+						<li><a class="dropdown-item" href="/me/stored/songs">Kho nhạc</a></li>
+						<div class="dropdown-divider"></div>
+						<li><a class="dropdown-item" href="/me/stored/users">Quản lí người dùng</a></li>
+						<div class="dropdown-divider"></div>
+						<li><a class="dropdown-item profile" href="/me/user">Profile</a></li>
+						<div class="dropdown-divider"></div>
+						<li><a class="dropdown-item" onclick="logout()">Đăng xuất</a></li>
+					</ul>
+				</div>
+			</div>
+
+			<div class="col-sm-2 p-0 hidenav" style="height:50px;justify-content:center" id="userdropdown">
+				<div class="dropdown d-inline-flex" style="width:100%">
+					<button style="width:100%" class=" userNav" id="navbarDropdown1" data-bs-toggle="dropdown" data-bs-auto-close="outside" aria-expanded="false">
+						<img src="https://img.lovepik.com/free-png/20210922/lovepik-hand-painted-cartoon-male-head-png-image_401073216_wh1200.png" alt="" class="user-avatar">
+						<span>Nguyen Lê</span>
+					</button>
+					<ul class="dropdownmenu dropdown-menu" id="dropdownavt1" style="padding:0px;min-width: 5rem !important">
+						<li><a class="dropdown-item profile" style="cursor:pointer" href="/me/user">Profile</a></li>
+						<div class="dropdown-divider"></div>
+						<li><a class="dropdown-item" onclick="logout()">Đăng xuất</a></li>
+					</ul>
+				</div>
+			</div>
+
+			<div class="dropdown col-sm-1 d-inline-flex px-0">
+				<button class="col topNavElement" data-bs-toggle="dropdown" data-bs-auto-close="outside" id="dropdown0" aria-expanded="false">
+					<!-- bars -->
+					<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" height="30px" width="30px" style="fill:var(--text-color)" class="transformsvg">
+						<path d="M0 96C0 78.3 14.3 64 32 64H416c17.7 0 32 14.3 32 32s-14.3 32-32 32H32C14.3 128 0 113.7 0 96zM0 256c0-17.7 14.3-32 32-32H416c17.7
+							0 32 14.3 32 32s-14.3 32-32 32H32c-17.7 0-32-14.3-32-32zM448 416c0 17.7-14.3 32-32 32H32c-17.7 0-32-14.3-32-32s14.3-32 32-32H416c17.7 0 32 14.3 32 32z"/></svg>							
+				</button>
+				<ul class="dropdownmenu dropdown-menu" style="padding:0px;min-width: 5rem !important;max-height:150px" id="dropdownmenu0">
+					<li><a class="dropdown-item" href="/">Home</a></li>
+					<li class="row" style="width:100%;padding-top:5px; margin:0px 0px; padding-left:1px; padding-right:1px">
+						<!--moon/dark theme icon-->
+						<svg class="col-3 mx-1 p-0 d-inline-flex" xmlns="http://www.w3.org/2000/svg" id="moon1" data-name="Layer 1" viewBox="0 0 24 24" width="24px" height="24px">
+							<path d="M14,24A12.013,12.013,0,0,1,2,12C1.847,3.044,12.031-2.985,19.791,1.509l1.553.862-1.543.88c-6.7,
+							3.688-6.21,13.87.8,16.906l1.621.731-1.467,1.006A11.921,11.921,0,0,1,14,24Z"/>
+						</svg>
+						<span class="switch col-6 d-inline-flex px-0 mx-1" id="theme-slider" onclick="set_theme()" style="align-items:center;margin-left:18px;cursor:pointer">
+							<input type="checkbox" style="display:none">
+							<span class="slider"></span>
+						</span>
+					</li>
+				</ul>
+			</div>
+		</div>
+	</div>
+</div>
+<script>
+	$(document).ready(function()
+	{
+		if(localStorage.jwt)
+		{
+			
+			let userdata=parseJwt(localStorage.jwt)
+			document.querySelectorAll('.user-avatar').forEach((item)=>{
+				item.setAttribute('src',userdata.image);
+			})
+			document.querySelectorAll('button.userNav>span').forEach((item)=>{
+				item.innerHTML=userdata.fullname;
+			})
+			document.querySelectorAll('.profile').forEach((item)=>{
+				item.setAttribute('href','/me/'+userdata._id);
+			})
+		}
+	})
+	function gotoSignIn(event)
+	{
+		event.preventDefault();
+		location.href='/me/sign-in';
+	}
+	function gotoprofile()
+	{
+
+	}
+	$('#navbarDropdown1').on("show.bs.dropdown",function()
+	{
+		$('#dropdownavt1').css("z-indent","5");
+		$('#dropdownavt1').css("display","flex");
+		$('#navbarDropdown1').animate({marginBottom:"+=120px"});
+		$('#dropdownavt1').animate({height:"120px",opacity:"1"},400);
+
+	});
+
+	$("#navbarDropdown1").on("hide.bs.dropdown",function()
+	{
+		$('#navbarDropdown1').animate({marginBottom:"-=120px"});
+		$("#dropdownavt1").animate({height:"0px",opacity:"0"},400,function()
+		{
+		});
+		$("#dropdownavt1").css("z-indent","0");
+	});
+	function logout()
+	{
+		if(localStorage.jwt)
+		{
+			localStorage.removeItem('jwt');
+			location.href='/';
+		}
+		else
+		{
+
+		}
+	}
+</script>

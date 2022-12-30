@@ -1,0 +1,131 @@
+<form class="mt-4" name="container-form" method="POST" action="/me/handle-form-actions">
+  <div>
+    <h3>Danh sách người dùng</h3>
+    {{!-- {{#if deletedCount}} --}}
+    {{!-- {{/if}} --}}
+    <div class="mt-4 d-flex align-items-center">
+      <div class="form-check">
+        <input class="form-check-input" type="checkbox" value="" id="checkbox-all">
+        <label class="form-check-label" for="checkbox-all">
+          Chọn tất cả
+        </label>
+      </div>
+
+      <select class="form-control form-control-sm checkbox-select-all-options" name="action" required="required">
+        <option value="">-- Hành động --</option>
+        <option value="delete">Xóa</option>
+      </select>
+      <button class="btn btn-primary btn-sm check-all-submit-btn" style="font-weight:bold;border-radius:15px;font-family:'Lucida Sans', 'Lucida Sans Regular', 'Lucida Grande', 'Lucida Sans Unicode', Geneva, Verdana, sans-serif" disabled="disabled">Thực hiện</button>
+    </div>
+  </div>
+
+    <table class="table mt-4" style="color:var(--text-color)">
+        <thead>
+            <tr>
+                <th scope="col" colspan="2">#</th>
+                <th scope="col">Tên người dùng</th>
+                <th scope="col">Email người dùng</th>
+                <th scope="col" colspan="2">Ngày tạo tài khoản</th>
+            </tr>
+        </thead>
+        <tbody>
+            {{#each users}}
+            <tr>
+                <td>
+                  <div class="form-check">
+                    <input class="form-check-input" type="checkbox" name="userIds[]" value="{{this._id}}">
+                  </div>
+                </td>
+                <th scope="row">{{sum @index 1}}</th>
+                <td>{{this.fullname}}</td>
+                <td>{{this.email}}</td>
+                <td>{{this.createdAt}}</td>
+                <td class="d-flex" style="justify-content:flex-end">
+                    <a href="" class="btn btn-link" data-bs-toggle="modal" style="btn::hover{color: white}" data-id="{{this._id}}" data-bs-target="#delete-user-modal">
+                      <i class="fa-solid fa-trash-can"></i>
+                    </a>
+                </td>
+            </tr>
+            {{else}}
+            <tr>
+              <td colspan="5" class="text-center">
+                Chưa có người dùng.
+              </td>
+            </tr>
+            {{/each}}
+        </tbody>
+    </table>
+</form>
+
+{{!-- Xác nhận xóa nhạc --}}
+
+<div id="delete-user-modal" class="modal" tabindex="-1" role="dialog">
+  <div class="modal-dialog" role="document">
+    <div class="modal-content" style="background-color:var(--nav-color)">
+      <div class="modal-header">
+        <h5 class="modal-title">Xóa người dùng?</h5>
+        <button type="button" style="font-weight:600;width:30px;height:30px;border-radius:10px;border:1px solid black;background-color:var(--button-color)" class="close" data-bs-dismiss="modal" aria-label="Close">
+          X
+        </button>
+      </div>
+      <div class="modal-body">
+        <p>Bạn chắc chắn muốn xóa người dùng này?</p>
+      </div>
+      <div class="modal-footer">
+        <button id="btn-delete-user" type="button" class="btn btn-danger">Xóa bỏ</button>
+        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Hủy</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+{{!-- Delete hidden form --}}
+<form name="delete-user-form" method="POST"></form>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        var songId
+        var deleteForm = document.forms['delete-user-form']
+        var containerForm = $('form[name="container-form"]')
+        var btnDeleteSong = document.getElementById('btn-delete-user')
+        var checkboxAll = $('#checkbox-all')
+        var songItemCheckbox = $('input[name="userIds[]"]')
+        var checkAllSubmitBtn = $('.check-all-submit-btn')
+
+        // When dialog confirm clicked
+         $('#delete-user-modal').on('show.bs.modal', function (event) {
+            var button = $(event.relatedTarget)
+            userId = button.data('id')
+        })
+
+        // When delete song btn clicked
+        btnDeleteSong.onclick = function () {
+            deleteForm.action = '/me/' + userId + '/force?_method=DELETE'
+            deleteForm.submit()
+        }
+
+        // Checkbox all changed
+        checkboxAll.change(function () {
+          var isCheckedAll = $(this).prop('checked')
+          songItemCheckbox.prop('checked', isCheckedAll)
+          renderCheckAllSubmitBtn()
+        })
+
+        // Song item checkbox changed
+        songItemCheckbox.change(function () {
+          var isCheckedAll = songItemCheckbox.length === $('input[name="userIds[]"]:checked').length
+          checkboxAll.prop('checked', isCheckedAll)
+          renderCheckAllSubmitBtn()
+        })
+
+        //Re-render check all submit button
+        function renderCheckAllSubmitBtn() {
+          var checkedCount = $('input[name="userIds[]"]:checked').length
+          if(checkedCount > 0) {
+            checkAllSubmitBtn.attr('disabled', false)
+          } else {
+            checkAllSubmitBtn.attr('disabled', true)
+          }
+        }
+    })
+</script>
