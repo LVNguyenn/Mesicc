@@ -4,7 +4,6 @@ const bcrypt = require('bcrypt')
 const { multipleMongooseToObject } = require('../../util/mongoose')
 const crypto = require('crypto')
 const jwt = require('jsonwebtoken')
-const abc = 0
 const secret = "f00edb34692c85340b4366d53000f7a35980f4ee204d66369fe7ee4a1ee8a23e009fccde66faf851a58ff2edd62febf613436fb746218d7838fb45c257245e20"
 function generateToken(user) {
     return jwt.sign(JSON.stringify(user), secret, {});
