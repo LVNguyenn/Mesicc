@@ -1,10 +1,12 @@
+<div id="pagecount" style="display:none"></div>
+<div id="songcount" style="display:none">{{this.count}}</div>
 <form class="mt-4" name="container-form" method="POST" action="/songs/handle-form-actions">
   <div>
     <h3>Kho nhạc</h3>
     {{!-- {{#if deletedCount}} --}}
-    <a href="/me/trash/songs">Thùng rác 
-				<i class="fa-solid fa-trash-can"></i>({{deletedCount}})
-     </a>
+    <a href="/me/trash/songs">Thùng rác
+		<i class="fa-solid fa-trash-can"></i>({{deletedCount}})
+	</a>
     {{!-- {{/if}} --}}
     <div class="mt-4 d-flex align-items-center">
       <div class="form-check">
@@ -45,11 +47,11 @@
                 <td>{{this.createdAt}}</td>
                 <td>
                     <a href="/songs/{{this._id}}/edit" class="btn btn-link">
-                      <i class="fa-sharp fa-solid fa-pen"></i>
-                    </a>
+						<i class="fa-sharp fa-solid fa-pen"></i>
+					</a>
                     <a href="" class="btn btn-link" data-bs-toggle="modal" style="btn::hover{color: white}" data-id="{{this._id}}" data-bs-target="#delete-song-modal">
-            					<i class="fa-solid fa-trash-can"></i>
-                    </a>
+						<i class="fa-solid fa-trash-can"></i>
+					</a>
                 </td>
             </tr>
             {{else}}
@@ -63,7 +65,22 @@
         </tbody>
     </table>
 </form>
-
+<div class="d-flex" style="justify-content:center">
+    <nav class="pagination-container" style="align-items:center">
+		<div class="col-2">
+		</div>
+        <button class="pagination-button" id="prev-button" aria-label="Previous page" title="Previous page">&lt;
+        </button>
+        
+        <div id="pagination-numbers">  
+        </div>
+        
+        <button class="pagination-button" id="next-button" aria-label="Next page" title="Next page">&gt;
+        </button>
+		<label class="col-1">Go to page:</label>
+		<input type="text" id="gotopage" class="col-1 px-1" style="border-radius:10px">
+    </nav>
+</div>
 {{!-- Xác nhận xóa nhạc --}}
 
 <div id="delete-song-modal" class="modal" tabindex="-1" role="dialog">
@@ -90,6 +107,187 @@
 <form name="delete-song-form" method="POST"></form>
 
 <script>
+  function isNumberic(str){
+		if(typeof str !="string")
+		{
+			return false;
+		}
+		return !isNaN(str) && !isNaN(parseFloat(str));
+	}
+	document.getElementById('gotopage').onkeypress=function(e){
+		if(e.key=="Enter"||e.keyCode==13)
+		{
+			if(!isNumberic( $('#gotopage').val() ))
+			{
+				return;
+			}
+			let gotonum=parseInt($('#gotopage').val());
+			let maxpage=parseInt($('#pagecount').html());
+			if(gotonum < 1 || gotonum > maxpage)
+			{
+				if(gotonum<1)
+				{
+					gotopage("1");
+				}
+				else
+				{
+					gotopage($('#pagecount').html());
+				}
+				return;
+			}
+			gotopage($('#gotopage').val());
+		}
+	}
+	function gotopage(val)
+	{
+		var searchparams= new URLSearchParams(location.search);
+		searchparams.set('i',parseInt(val));
+		location.search=searchparams.toString();
+	}
+        const paginationNumbers = document.getElementById("pagination-numbers");
+        const paginatedList = document.getElementById("paginated-list");
+        const listItems = document.getElementById('songcount').innerHTML;
+        const nextButton = document.getElementById("next-button");
+        const prevButton = document.getElementById("prev-button");
+
+        const paginationLimit = 20;
+        const pageCount = Math.ceil(listItems / paginationLimit);
+        let currentPage = 1;
+		$(document).ready(function(){
+			document.getElementById('gotopage').placeholder='Max Page: '+pageCount;
+			document.getElementById('pagecount').innerHTML=pageCount;
+		})
+	
+		const disableButton = (button) => {
+			console.log("disabled");
+		button.classList.add("disabled");
+		button.setAttribute("disabled", true);
+		};
+
+		const enableButton = (button) => {
+		button.classList.remove("disabled");
+		button.removeAttribute("disabled");
+		};
+		const handlePageButtonsStatus = () => {
+		if (currentPage == 1) {
+			console.log("disable prev");
+			disableButton(prevButton);
+		} 
+		else {
+			console.log("enable prev");
+			enableButton(prevButton);
+		}
+
+		if (pageCount == currentPage) {
+			console.log("disable next");
+			disableButton(nextButton);
+		} 
+		else {
+			console.log("enable next");
+			enableButton(nextButton);
+		}
+		};
+
+		/*const handleActivePageNumber = () => {
+		document.querySelectorAll(".pagination-number").forEach((button) => {
+			button.classList.remove("active");
+			const pageIndex = Number(button.getAttribute("page-index"));
+			if (pageIndex == currentPage) {
+			button.classList.add("active");
+			}
+		});
+		};*/
+
+		const appendPageNumber = (index) => {
+		const pageNumber = document.createElement("button");
+		pageNumber.className = "pagination-number";
+		pageNumber.innerHTML = index;
+		pageNumber.setAttribute("page-index", index);
+		pageNumber.setAttribute("aria-label", "Page " + index);
+		pageNumber.setAttribute('id',"pagination-number-"+index);
+		paginationNumbers.appendChild(pageNumber);
+		};
+
+		const getPaginationNumbers = () => {
+			for (let i = 1; i <= pageCount; i++) {
+				let tempel=document.getElementById("pagination-number-"+i);
+				if(tempel!=null && typeof(tempel)!="undefined")
+				{
+					tempel.remove();
+				}
+				if(i>=Number(currentPage)-1 && i<=Number(currentPage)+1)
+				{
+					appendPageNumber(i);
+				}
+			}
+		};
+
+		const setCurrentPage = (pageNum) => {
+		console.log("set page");
+		console.log(pageNum);
+		currentPage = pageNum;
+		
+		//handleActivePageNumber();
+		handlePageButtonsStatus();
+		
+		const prevRange = (pageNum - 1) * paginationLimit;
+		const currRange = pageNum * paginationLimit;
+
+
+		localStorage.currPage=currentPage;
+		};
+		if(!localStorage.currPage)
+		{
+			localStorage.currPage=1;
+		}
+		window.addEventListener("load", () => {
+		//var searchparams= new URLSearchParams(location.search);
+		//searchparams.set('i',currentPage);
+		//var newRelativePathQuery = window.location.pathname + '?' + searchparams.toString();
+		//history.pushState(null, '', newRelativePathQuery);
+		var params=new URLSearchParams(location.search);
+		if(!params.has('i'))
+		{
+			params.set('i','1');
+			window.history.pushState(null,'','?'+params.toString());
+		}
+		localStorage.currPage=params.get('i');
+		setCurrentPage(localStorage.currPage);
+		getPaginationNumbers();
+		curpagebtn=document.getElementById('pagination-number-'+currentPage);
+		curpagebtn.classList.add('active');
+		prevButton.addEventListener("click", () => {
+			if(currentPage<=1)
+			{
+				return;
+			}
+			var searchparams= new URLSearchParams(location.search);
+			searchparams.set('i',Number(currentPage)-1);
+			location.search=searchparams.toString();
+		});
+
+		nextButton.addEventListener("click", () => {
+			if(currentPage>=pageCount)
+			{
+				return;
+			}
+			var searchparams= new URLSearchParams(location.search);
+			searchparams.set('i',Number(currentPage)+1);
+			location.search=searchparams.toString();
+		});
+
+		document.querySelectorAll(".pagination-number").forEach((button) => {
+			const pageIndex = Number(button.getAttribute("page-index"));
+			if (pageIndex) {
+			button.addEventListener("click", () => {
+				var searchparams= new URLSearchParams(location.search);
+				searchparams.set('i',pageIndex);
+				location.search=searchparams.toString();
+			});
+			}
+		});
+		});
+
     document.addEventListener('DOMContentLoaded', function() {
         var songId
         var deleteForm = document.forms['delete-song-form']

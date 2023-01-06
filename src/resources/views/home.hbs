@@ -21,6 +21,7 @@
 
     </div>
 </div>
+<div id="pagecount" style="display:none"></div>
 <div id="songcount" style="display:none">{{this.count}}</div>
 <div class="d-flex" style="justify-content:center">
     <nav class="pagination-container" style="align-items:center">
@@ -40,9 +41,29 @@
 </div>
 <script>
 
+	function isNumberic(str) {
+		if(typeof str !="string"){
+			return false;
+		}
+		return !isNaN(str) && !isNaN(parseFloat(str));
+	}
+
 	document.getElementById('gotopage').onkeypress=function(e){
 		if(e.key=="Enter"||e.keyCode==13)
 		{
+			if(!isNumberic($('#gotopage').val())){
+				return;
+			}
+			let gotonum=parseInt($('#gotopage').val());
+			let maxpage=parseInt($('#pagecount').html());
+			if(gotonum < 1 || gotonum > maxpage){
+				if(gotonum < 1) {
+					gotopage("1");
+				} else {
+					gotopage($('#pagecount').html());
+				}
+				return;
+			}
 			gotopage($('#gotopage').val());
 		}
 	}
@@ -50,7 +71,7 @@
 	{
 		console.log("ok");
 		var searchparams= new URLSearchParams(location.search);
-		searchparams.set('i',Number(val));
+		searchparams.set('i',parseInt(val));
 		location.search=searchparams.toString();
 	}
         const paginationNumbers = document.getElementById("pagination-numbers");
@@ -64,6 +85,7 @@
         let currentPage = 1;
 		$(document).ready(function(){
 			document.getElementById('gotopage').placeholder='Max Page: '+pageCount;
+			document.getElementById('pagecount').innerHTML=pageCount;
 		})
 	
 		const disableButton = (button) => {

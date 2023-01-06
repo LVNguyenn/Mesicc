@@ -10,27 +10,34 @@ function generateToken(user) {
 }
 class MeController {
     // [GET] /me/stored/songs
-    storedSongs(req, res, next) {
-
-        Promise.all([Song.find({}), Song.countDocumentsDeleted()])
-            .then(([songs, deletedCount]) =>
-                res.render('me/stored-songs', {
-                    deletedCount,
-                    songs: multipleMongooseToObject(songs)
-                })
-            )
-            .catch(next)
+    async storedSongs(req, res, next) {
+        if (req.query.i == undefined) {
+            req.query.i = 1;
+        }
+        console.log(req.query.i);
+        let count = await Song.countDocuments({});
+        let songs = await Song.find({}).skip((req.query.i - 1) * 20).limit(20);
+        let deletedCount = await Song.countDocumentsDeleted();
+        //console.log(songs[0]);
+        res.render('me/stored-songs', {
+            deletedCount,
+            songs: multipleMongooseToObject(songs),
+            count: count
+        })
     }
 
-    storedUsers(req, res, next) {
-        Promise.all([User.find({}), User.countDocumentsDeleted()])
-            .then(([users, deletedCount]) =>
-                res.render('me/stored-users', {
-                    deletedCount,
-                    users: multipleMongooseToObject(users)
-                })
-            )
-            .catch(next)
+    async storedUsers(req, res, next) {
+        if (req.query.i == undefined) {
+            req.query.i = 1;
+        }
+        let count = await User.countDocuments({});
+        let users = await User.find({}).skip((req.query.i - 1) * 20).limit(20);
+        let deletedCount = await User.countDocumentsDeleted();
+        res.render('me/stored-users', {
+            deletedCount,
+            users: multipleMongooseToObject(users),
+            count: count
+        })
     }
 
     async handleFormActions(req, res, next) {
