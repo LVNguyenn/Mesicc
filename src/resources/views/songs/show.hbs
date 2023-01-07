@@ -24,7 +24,7 @@
 		<div class="row d-flex p-0 mt-4" style="justify-content:center">
 			<div class="d-flex col-2 p-0 mx-3 volume-control" style="align-items:center;justify-content:center">
 				<i class="fa-solid fa-volume-low"></i>
-				<input type="range" min="1" max="100" value="100" id="volume_slider" class="mx-2 col-12" onchange="setVolume()">
+				<input type="range" min="0" max="100" value="100" id="volume_slider" class="mx-2 col-12" onchange="setVolume()">
 				<i class="fa-solid fa-volume-high"></i>
 			</div>
 		</div>
@@ -118,7 +118,7 @@
 			<h3>Comments</h3>
 		</div>
 		<div class="d-flex" style="justiy-content:center">
-			<form method="POST" id='comment-form' action="/me/comment" style="background:transparent;border:none;box-shadow:none" class="form2" id="form-1" onsubmit="checkcomment(event)">
+			<form method="POST" id="comment-form" action="/me/comment" style="background:transparent;border:none;box-shadow:none" class="form2" id="form-1" onsubmit="checkcomment(event)">
 				<input id="comment" name="comment" type="text" placeholder="Enter comment" class="form-control">
 			</form>
 		</div>
@@ -142,10 +142,19 @@
 </div>
 
 <script>
+	$('document').ready(function(){
+		if(!localStorage.jwt)
+		{
+			document.getElementById('comment').disabled=true;
+			document.getElementById('comment-form').style.display='none';
+			
+		}
+
+	})
 	function checkcomment(event)
 	{	
+		
 		document.getElementById('comment').disabled=true;
-
 		event.preventDefault();
 		if(localStorage.jwt)
 		{
@@ -174,13 +183,30 @@
 			}
 			else
 			{
-				location.reload();
+				let div1=document.createElement('div');
+				let jwtval=parseJwt(localStorage.jwt);
+				let name=jwtval.fullname;
+				let comment=obj.comment;
+				let date=response.date;
+				div1.classList.add("d-flex","mx-3","my-2","px-2","comment");
+				div1.style="justify-content:flex-end;flex-wrap:wrap;height:120px;max-height:120px;overflow:auto;word-wrap: break-word;border:2px solid var(--text-color);border-radius:15px;background:var(--bg-color);align-items:flex-start";
+				div1.innerHTML=`<div class="col-6 cmt-name d-flex" style="font-weight:bolder;font-size:larger">${name}</div>
+				
+					<div class="col-6 mt-1 d-flex date-show" style="align-items:center;justify-content:flex-end;font-weight:lighter;font-size:small">${date}</div>
+
+					<div class="mt-1 col-12" style="font-weight:normal">${comment}</div>
+					
+					<div class="col-12 cmt-date mt-3" style="display:none;font-weight:lighter;font-size:x-small">${date}</div>
+					<div id="erasecmt" style="cursor:pointer" onclick="erasecomment(this)">
+						<i class="fa-solid fa-trash-can"></i>
+					</div>`;
+				document.getElementById('commentsection').prepend(div1);
 			}
 			});
 		}
 		else
 		{
-			console.log("cancel comment");
+			
 			return;
 		}
 	}
@@ -219,17 +245,10 @@
 		}
 		else
 		{
-			location.reload();
+			parent.remove();
 		}
 		});
 	}
-
-	$('document').ready(function(){
-		if(!localStorage.jwt) {
-			document.getElementById('comment').disabled=true;
-			document.getElementById('comment-form').style.display='none';
-		}
-	})
 
 	function downloadmusic(event)
 	{
